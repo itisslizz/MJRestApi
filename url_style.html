@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<body>
+
+<table>
+    <tr>
+        <td>Resource</td><td>URL</td><td>Methods</td>
+    </tr>
+    <tr>
+        <td>login</td><td>/login</td><td>POST</td>
+    </tr>
+    <tr>
+        <td>register</td><td>/register</td><td>POST</td>
+    </tr>
+    <tr>
+        <td>timeline</td><td>/timeline</td><td>GET</td>
+    </tr>
+    <tr>
+        <td>user</td><td>/user/&lt;owner_id&gt;</td><td>GET</td>
+    </tr>
+    <tr>
+        <td>journal</td><td>/user/&lt;owner_id&gt;/journal</td><td>GET</td>
+    </tr>
+    <tr>
+        <td>screening</td><td>/screening(/&lt;screening_id&gt;)</td><td>POST (GET, DELETE, POST?)</td>
+    </tr>
+    <tr>
+        <td>watchlist</td><td>/user/&lt;owner_id&gt;/watchlist</td><td>GET</td>
+    </tr>
+    <tr>
+        <td>watchlist_entry</td><td>/watchlist_entry(/&lt;watchlist_entry_id&gt;)</td><td>POST (GET, DELETE, POST?)</td>
+    </tr>
+    <tr>
+        <td>follow_list</td><td>/user/&lt;owner_id&gt;/follow</td><td>GET</td>
+    </tr>
+    <tr>
+        <td>follow</td><td>/follow/(&lt;owner_id&gt;)</td><td>POST, (PUT, DELETE)</td>
+    </tr>
+    <tr>
+        <td>movie</td><td>/movie/&lt;movie_id&gt;</td><td>GET</td>
+    </tr>
+    <tr>
+        <td>star</td><td>/star/&lt;star_id&gt;</td><td>GET</td>
+    </tr>
+</table>
+<br>
+</body>
+</html>
