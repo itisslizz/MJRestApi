@@ -27,7 +27,7 @@ def register(request):
     email = request.POST.get('e', '')
     is_private = request.POST.get('i_p', False)
     """
-    data = json.loads(request.body)
+    data = json.loads(request.body.decode("utf-8"))
     username = data['u']
     password = data['p']
     email = data['e']
@@ -47,17 +47,17 @@ def register(request):
         response["error"] = str(e.__cause__)
         status = 400
     return HttpResponse(create_answer(request, response), content_type="application/json", status=status)
-    
+
 
 def login(request):
     """
     Check username and password against db
     NEEDS TOKEN??
     respond with necessary data for following requests
-    
+
     ALLOWED METHODS: POST
     """
-    data = json.loads(request.body)
+    data = json.loads(request.body.decode("utf-8"))
     username = data['u']
     password = data['p']
     user = authenticate(username=username, password=password)
@@ -71,10 +71,10 @@ def login(request):
     else:
         response['login'] = 'failed'
         response['user'] = user
-    
+
     return HttpResponse(create_answer(request, response), content_type="application/json")
-    
-    
+
+
 def timeline(request):
     """
     1. Get the list of users the user follows
@@ -82,10 +82,10 @@ def timeline(request):
        users sorted by entry date (descending)
        Grouped By Movie (e.g. one entry per movie)
     3. Get the Movies from themoviedb, RT and OMDB, MJ
-    
+
     ALLOWED METHODS: GET
     """
-    
+
     if request.user.is_authenticated():
         user = request.user
         if request.method != "GET":
@@ -102,18 +102,17 @@ def journal(request, user_id):
     1. Check if allowed (e.g. user not private or accepted follow request by USER)
     2. if allowed fetch journal list
     3. Get the Movies from themoviedb, RT, OMDB, MJ
-    
+
     ALLOWED METHODS: GET
     """
     if request.user.is_authenticated():
-        print >>sys.stderr, "journal"
         user = request.user
         if request.method == "GET":
             offset = request.GET.get("offset", 0)
             size = request.GET.get("size", 10)
             response = get_journal(user, user_id, offset, size)
             return HttpResponse(create_answer(request, response['result']), status=response['status'])
-        else: 
+        else:
             return HttpResponse(create_answer(request, {"Error": "Method Not Allowed"}), status=405)
     else:
         return HttpResponse(create_answer(request, {"Error": "Not Logged in"}), status=401)
@@ -122,7 +121,7 @@ def journal(request, user_id):
 def screening(request, screening_id=None):
     """
     1. Check if allowed (e.g. Logged In)
-    
+
     Allowed Methods: GET, POST, PUT, DELETE
     """
     if request.user.is_authenticated():
@@ -132,14 +131,12 @@ def screening(request, screening_id=None):
             return HttpResponse(create_answer(request, answer), status=answer['status'])
         elif request.method == "POST":
             try:
-                data = json.loads(request.body)
+                data = json.loads(request.body.decode("utf-8"))
                 status = post_screening(user, data["movie_id"])
                 return HttpResponse(status=status)
             except:
                 return HttpResponse(status=400)
         elif request.method == "DELETE":
-
-            print >>sys.stderr, "delete"
             status = delete_screening(user, screening_id)
             return HttpResponse(status=status)
         else:
@@ -154,7 +151,7 @@ def watchlist(request, user_id):
     1. Check if allowed (e.g. user not private or accepted follow request by USER)
     2. if allowed fetch watchlist
     3. Get Movies from themoviedb, RT, OMDB, MJ
-    
+
     ALLOWED METHODS: GET, POST
     """
     if request.user.is_authenticated():
@@ -177,8 +174,8 @@ def watchlist(request, user_id):
                     return HttpResponse(status=400)
             else:
                 return HttpResponse(create_answer(request, {"Error": "Cannot post to this Journal"}), status=403)
-            
-        else: 
+
+        else:
             return HttpResponse(create_answer(request, {"Error": "Method Not Allowed"}), status=405)
     else:
         return HttpResponse(create_answer(request, {"Error": "Not Logged in"}), status=401)
@@ -212,7 +209,7 @@ def watchlist_entry(request, watchlist_entry_id=None):
 def movie(request, movie_id):
     """
     1. Get Movies from themoviedb, RT, OMDB, MJ
-    
+
     ALLOWED METHODS: GET
     """
     if request.user.is_authenticated():
@@ -223,7 +220,7 @@ def movie(request, movie_id):
             response = get_movie(movie_id, user)
             if response['status'] == 404:
                 return HttpResponse(create_answer(request, {"Error": "No Movie Found"}), status=404)
-            
+
             return HttpResponse(create_answer(request, response['result']))
     else:
         return HttpResponse(create_answer(request, {"Error": "Not Logged in"}), status=401)
@@ -262,7 +259,7 @@ def user(request, user_id=None):
 def person(request, person_id):
     """
     2. Get Person from themoviedb
-    
+
     ALLOWED METHODS: GET
     """
 

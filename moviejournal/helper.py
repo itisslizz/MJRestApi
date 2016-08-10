@@ -34,6 +34,7 @@ def user_to_json(obj):
 
 def create_answer(request, data):
     data = json.dumps(data)
-    if 'callback' in request.REQUEST:
-        data = '%s(%s);' % (request.REQUEST['callback'], data)
+    print(request.GET)
+    if 'callback' in request.GET:
+        data = '%s(%s);' % (request.GET['callback'], data)
     return data

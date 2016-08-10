@@ -37,8 +37,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'moviejournal',
-    'tmdb',
-    'rt',
+    'tmdbsimple',
+    'rtsimple',
     'corsheaders',
 )
 

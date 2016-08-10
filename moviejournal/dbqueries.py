@@ -1,8 +1,8 @@
 from moviejournal.models import *
 from moviejournal.helper import obj_to_json, user_to_json
 
-from tmdb.tmdb import TMDB
-from rt.rt import RT
+import tmdbsimple as tmdb
+import rtsimple as rt
 
 from django.db.models import Avg, Count
 import sys
@@ -23,8 +23,9 @@ def check_movie(movie_id):
     if len(Movie.objects.filter(movie_id=movie_id)):
         return 200
     else:
-        tmdb = TMDB()
-        movie_info = tmdb.getMovieInfo(movie_id, 'en')
+        tmdb.API_KEY = '73c900d5c9037586315c91391abb0d93'
+        movie_t = tmdb.Movies(movie_id)
+        movie_info = movie_t.info()
         if movie_info is None:
             return 404
         else:
@@ -47,7 +48,6 @@ def is_allowed(user, owner_id):
         return 404
     owner = owner[0]
     mj_owner = MJUser.objects.get(user=owner)
-    print >>sys.stderr, mj_owner.private
     if mj_owner.private:
         follow = Follow.objects.filter(owner=user, following=owner)
         if len(follow) == 0:
@@ -69,10 +69,16 @@ def get_movie_external(movie):
 
     """
     response = {}
-    tmdb = TMDB()
-    rt = RT()
-    response['tmdb'] = tmdb.getMovieInfoTrailer(movie.movie_id, 'en')
-    response['rt'] = rt.getMovieInfoFromImdb(movie.imdb_id[2:], 'en')
+    # tmdb = TMDB()
+
+    tmdb.API_KEY = '73c900d5c9037586315c91391abb0d93'
+    movie_t = tmdb.Movies(movie.movie_id)
+    response_m = movie_t.info()
+    response_v = movie_t.videos()
+
+    print(movie_t)
+    response['tmdb'] = response_m
+    response['rt'] = response_v
     return response
 
 
@@ -113,7 +119,7 @@ def get_movie(movie_id, user):
     """
     Returns all necessary info for a movie with a given id
     requested by a user
-    
+
     :param movie_id: Id of the movie to be seen
     :param user: the user requesting it
     :return: The response or a 404 status if movie does not exist
@@ -291,8 +297,8 @@ def post_watchlist_entry(user, movie_id):
     watchlist.save()
 
     return 201
-    
-    
+
+
 def get_watchlist_entry(user, watchlist_entry_id):
     """
 
@@ -476,6 +482,3 @@ def set_private(user, value):
         return 204
     except:
         return 404
-
-
-
