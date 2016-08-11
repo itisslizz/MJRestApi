@@ -6,6 +6,7 @@ This project provides a backend for the MovieJournal Application.
 
 ### Dependencies
 Make sure you have the following installed:
+
 1. Python
 2. Django
 3. tmdbsimple `pip install tmdbsimple`

@@ -76,7 +76,8 @@ def get_movie_external(movie):
     response_m = movie_t.info()
     response_v = movie_t.videos()
 
-    print(movie_t)
+    print(response_v)
+    response_m['trailers'] = response_v['results']
     response['tmdb'] = response_m
     response['rt'] = response_v
     return response
