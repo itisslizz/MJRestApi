@@ -6,7 +6,7 @@ class MJUser(models.Model):
     user = models.OneToOneField(User)
     private = models.BooleanField(default=False)
 
-    
+
 # Create your models here.
 class Movie(models.Model):
     movie_id = models.IntegerField(primary_key=True)
@@ -25,7 +25,7 @@ class Watchlist(models.Model):
     movie = models.ForeignKey(Movie)
     owner = models.ForeignKey(User)
     time = models.DateTimeField('date added', auto_now_add=True)
-    time_removed = models.DateTimeField('date removed')
+    time_removed = models.DateTimeField('date removed', null=True)
     hidden = models.BooleanField(default=True)
 
 

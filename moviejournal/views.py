@@ -161,8 +161,9 @@ def watchlist(request, user_id):
             user_watchlist = User.objects.get(id=user_id)
             offset = request.GET.get("offset",0)
             size = request.GET.get("size",10)
-            response = get_watchlist(user_watchlist,offset,size)
-            return HttpResponse(create_answer(request, response), content_type="application/json")
+            response = get_watchlist(user,user_id,offset,size)
+            return HttpResponse(create_answer(request, response['result']), status=response['status'])
+
         elif request.method == "POST":
             movie_id = request.POST["movie_id"]
             user_watchlist = User.objects.get(id=user_id)
@@ -194,8 +195,14 @@ def watchlist_entry(request, watchlist_entry_id=None):
             answer = get_watchlist_entry(user, watchlist_entry_id)
             return HttpResponse(create_answer(request, answer), content_type="application/json", status=answer['status'])
         elif request.method == "POST":
-            status = post_watchlist_entry(user, request.POST["movie_id"])
-            return HttpResponse(status=status)
+            try:
+                data = json.loads(request.body.decode("utf-8"))
+                status = post_watchlist_entry(user, data["movie_id"])
+
+                return HttpResponse(status=status)
+            except Exception as e:
+                print(e)
+                return HttpResponse(status=400)
         elif request.method == "DELETE":
             status = delete_watchlist_entry(user, watchlist_entry_id)
             return HttpResponse(status=status)

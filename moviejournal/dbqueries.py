@@ -76,7 +76,6 @@ def get_movie_external(movie):
     response_m = movie_t.info()
     response_v = movie_t.videos()
 
-    print(response_v)
     response_m['trailers'] = response_v['results']
     response['tmdb'] = response_m
     response['rt'] = response_v
@@ -260,21 +259,22 @@ def get_watchlist(user, owner_id, offset, size):
     """
     answer = dict()
     answer['status'] = is_allowed(user, owner_id)
+    answer['result'] = {}
     if answer['status'] != 200:
         return answer
     owner = User.objects.get(id=owner_id)
     watchlist = Watchlist.objects.filter(owner=owner).order_by('time')[offset:offset+size]
-    answer['total'] = Screening.objects.filter(owner=owner).aggregate(Count('id'))
-    answer['offset'] = offset
+    answer['result']['total'] = Screening.objects.filter(owner=owner).aggregate(Count('id'))
+    answer['result']['offset'] = offset
     results = []
     for watchlist_raw in watchlist:
         watchlist_entry = dict()
         ext = get_movie_external(watchlist_raw.movie)
         watchlist_entry['tmdb'] = ext['tmdb']
         watchlist_entry['rt'] = ext['rt']
-        watchlist_entry['info'] = watchlist_raw
+        watchlist_entry['info'] = obj_to_json(watchlist_raw)
         results.append(watchlist_entry)
-    answer['results'] = results
+    answer['result']['results'] = results
     return answer
 
 
@@ -291,12 +291,12 @@ def post_watchlist_entry(user, movie_id):
     if success == 404:
         return 400
     movie = Movie.objects.get(movie_id=movie_id)
-    if Watchlist.objects.filter(movie=movie, owner=user)\
-            + Screening.objects.filter(movie=movie, owner=user):
+    if len(Watchlist.objects.filter(movie=movie, owner=user))\
+            + len(Screening.objects.filter(movie=movie, owner=user)):
         return 400
     watchlist = Watchlist(owner=user, movie=movie)
     watchlist.save()
-
+    print("Why no work?")
     return 201
 
 
